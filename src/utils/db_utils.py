@@ -11,7 +11,7 @@ def get_database_url() -> str:
     """
     Construct the database URL for SQLAlchemy.
     """
-    return f"postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:5432/{POSTGRES_DB}"
+    return f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@localhost:5431/{POSTGRES_DB}"
 
 
 engine = create_async_engine(get_database_url())

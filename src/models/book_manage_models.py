@@ -1,5 +1,5 @@
-from sqlalchemy import UUID, String, Integer, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import UUID, String, Integer, Boolean, DateTime, ForeignKey, Column
+from sqlalchemy.orm import relationship
 from datetime import datetime
 import uuid
 from src.utils.db_utils import Base
@@ -20,18 +20,20 @@ class Author(Base):
 class Book(Base):
     __tablename__ = "books"
 
-    id: Column = Column(UUID(as_uuid=True), primary_key=True)
-    title: Column = Column(String, nullable=False)
-    publication_year: Column = Column(Integer, nullable=False)
-    quantity: Column = Column(Integer, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title = Column(String, nullable=False)
+    publication_year = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
     available_quantity = Column(Integer, nullable=False, default=1)
     author_id = Column(UUID(as_uuid=True), ForeignKey("authors.id"), nullable=False)
+    state = Column(Boolean, nullable=False, default=True)
+    description = Column(String, nullable=True)
+
     author = relationship("Author", back_populates="books")
-    state: Column = Column(Boolean, nullable=False)
-    description: Column = Column(String, nullable=True)
+    loans = relationship("Management", back_populates="book")
 
     def __repr__(self):
-        return f"<Book(id={self.id}, name={self.name}, publication_year={self.publication_year} description={self.description})>"
+        return f"<Book(id={self.id}, title='{self.title}', publication_year={self.publication_year})>"
 
 # Borrower
 class Borrower(Base):
@@ -51,7 +53,6 @@ class Borrower(Base):
         return (f"<Borrower(id='{self.id}', name='{self.name}', email='{self.email}', "
                 f"phone='{self.phone}')>")
 
-
 class Management(Base):
     __tablename__ = "management"
 
@@ -62,9 +63,9 @@ class Management(Base):
     due_date = Column(DateTime, nullable=False)
     return_date = Column(DateTime, nullable=True)
     is_returned = Column(Boolean, nullable=False, default=False)
-    book = relationship("Book", back_populates="management")
 
-    borrower = relationship("Borrower", back_populates="management")
+    book = relationship("Book", back_populates="loans")
+    borrower = relationship("Borrower", back_populates="loans")
 
     def __repr__(self):
         return (f"<Management(id='{self.id}', book_id='{self.book_id}', borrower_id='{self.borrower_id}', "
