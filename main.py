@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from src.api.main_router import router as main_router
-
-app = FastAPI()
-app.include_router(main_router)
+from src.api.todo_app.todo_endpoint import todo as todo_app
+router = FastAPI()
+router.include_router(todo_app)

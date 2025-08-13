@@ -1,16 +1,15 @@
-from sqlalchemy import Column, UUID, String, Boolean, DateTime
-from src.utils.db_utils import Base
+from sqlalchemy import Column, String, Boolean, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 import uuid
+
+Base = declarative_base()
 
 class Todo(Base):
     __tablename__ = "todos"
 
-    id = Column(UUID, primary_key=True, default=uuid.uuid4)
-    title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
-    completed = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
-
-    def __repr__(self):
-        return f"<Todo(id={self.id}, title={self.title}, completed={self.completed})>"
+    id: Column = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
+    title: Column = Column(String, nullable=False)
+    completed: Column = Column(Boolean, default=False)
+    created_at: Column = Column(DateTime, default=datetime.now)
+    updated_at: Column = Column(DateTime, default=datetime.now, onupdate=datetime.now)
